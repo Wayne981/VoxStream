@@ -21,7 +21,7 @@ export default function Home({ initialTweets }: HomeProps) {
   const queryClient = useQueryClient();
   const { tweets: fetchedTweets, isLoading, error } = useGetAllTweets(initialTweets);
   
-  const handleLoginWithGoogle = useGoogleLogin(queryClient);
+  const handleLoginWithGoogle = useGoogleLogin();
   const { createTweet } = useCreateTweet();
 
   const [tweets, setTweets] = useState<Tweet[]>(initialTweets || []);

@@ -1,11 +1,9 @@
 import { getAllTweetsQuery } from "@/graphql/query/tweet";
-import { createTweetMutation } from "@/graphql/mutation/tweet";
-import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
+import { createTweetMutation, deleteTweetMutation } from "@/graphql/mutation/tweet";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { graphQLClient } from "@/clients/api";
 import toast from 'react-hot-toast';
-import { CreateTweetData } from "@/gql/graphql";
-
-
+import { CreateTweetData, Tweet } from "@/gql/graphql";
 
 export const useCreateTweet = () => {
   const queryClient = useQueryClient();
@@ -27,16 +25,38 @@ export const useCreateTweet = () => {
   return { createTweet };
 };
 
-  export const useGetAllTweets = (initialTweets: Tweet[]) => {
-    return useQuery({
-      queryKey: ["all-tweets"],
-      queryFn: async () => {
-        const response = await graphQLClient.request(getAllTweetsQuery);
-        return response.getAllTweets;
-      },
-      initialData: initialTweets,
-      onError: (error) => {
-        console.error("Error fetching tweets:", error);
-      },
-    });
+export const useDeleteTweet = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (id: string) =>
+      graphQLClient.request(deleteTweetMutation, { id }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["all-tweets"]);
+      toast.success('Tweet deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.errors?.[0]?.message || 'Failed to delete tweet');
+    }
+  });
+
+  const deleteTweet = async (id: string) => {
+    await mutation.mutateAsync(id);
   };
+
+  return { deleteTweet, isDeleting: mutation.isLoading };
+};
+
+export const useGetAllTweets = (initialTweets: Tweet[]) => {
+  return useQuery({
+    queryKey: ["all-tweets"],
+    queryFn: async () => {
+      const response = await graphQLClient.request(getAllTweetsQuery);
+      return response.getAllTweets;
+    },
+    initialData: initialTweets,
+    onError: (error) => {
+      console.error("Error fetching tweets:", error);
+    },
+  });
+};

@@ -28,33 +28,38 @@ const s3Client = new S3Client({
 });
 
 const queries = {
-  getAllTweets: () =>  
-    prismaClient.tweet.findMany({ orderBy: { createdAt: "desc" } }),
-  getSignedUrlForTweet: async (parent: any, { imageType, imageName }: { imageType: string, imageName: string }, 
-    ctx: GraphqlContext) => {
-      if(!ctx.user || !ctx.user.id) throw new Error("You are not authenticated");
-      const allowedImageTypes = ["image/jpg", "image/jpeg", "image/png", "image/webp"]; 
-      if(!allowedImageTypes.includes(imageType)) throw new Error("Invalid image type"); 
+  getAllTweets: async () => {
+    const tweets = await prismaClient.tweet.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    
+    // Format dates before returning
+    return tweets.map(tweet => ({
+      ...tweet,
+      createdAt: tweet.createdAt.toISOString(),
+      updatedAt: tweet.updatedAt.toISOString()
+    }));
+  },
+  getSignedUrlForTweet: async (
+    parent: any,
+    { imageName, imageType }: { imageName: string; imageType: string },
+    context: GraphqlContext
+  ) => {
+    if (!context.user) throw new Error("You are not authenticated");
 
-      const bucketName = process.env.S3_BUCKET_NAME;
-      if (!bucketName) {
-        throw new Error("S3 bucket name is not set in environment variables");
-      }
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedImageTypes.includes(imageType))
+      throw new Error("Unsupported image type");
 
-      // Clean the filename and create a unique key
-      const cleanFileName = imageName.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const key = `uploads/${ctx.user.id}/tweets/${cleanFileName}_${Date.now()}`;
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME!,
+      Key: `tweets/${context.user.id}/${imageName}`,
+      ContentType: imageType,
+    });
 
-      const putObjectCommand = new PutObjectCommand({ 
-        Bucket: bucketName,
-        Key: key,
-        ContentType: imageType,
-        ACL: 'public-read'  // Make the uploaded file publicly readable
-      });
-
-      const signedURL = await getSignedUrl(s3Client, putObjectCommand);
-      return signedURL;
-  }
+    const signedUrl = await getSignedUrl(s3Client, putObjectCommand);
+    return signedUrl;
+  },
 };
 
 const mutations = {
@@ -72,8 +77,34 @@ const mutations = {
       },
     });
 
-    return tweet;
+    // Format dates before returning
+    return {
+      ...tweet,
+      createdAt: tweet.createdAt.toISOString(),
+      updatedAt: tweet.updatedAt.toISOString()
+    };
   },
+  deleteTweet: async (
+    parent: any,
+    { id }: { id: string },
+    context: GraphqlContext
+  ) => {
+    if (!context.user) throw new Error("You are not authenticated");
+
+    const tweet = await prismaClient.tweet.findUnique({
+      where: { id },
+      select: { authorId: true }
+    });
+
+    if (!tweet) throw new Error("Tweet not found");
+    if (tweet.authorId !== context.user.id) throw new Error("Not authorized to delete this tweet");
+
+    await prismaClient.tweet.delete({
+      where: { id }
+    });
+
+    return true;
+  }
 };
 
 const extraResolvers = {
