@@ -76,7 +76,7 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = ({ children }) => {
               <div className="mb-4 flex items-center gap-2 cursor-pointer hover:bg-gray-200 rounded-full p-3">
                 <Image 
                   src={user.profileImageURL || "/default-avatar.png"} 
-                  alt="Profile" 
+                  alt={user.firstName || "Profile"} 
                   width={40} 
                   height={40} 
                   className="rounded-full" 
