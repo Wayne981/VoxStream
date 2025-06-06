@@ -6,7 +6,7 @@
     "dev": "concurrently \"yarn run codegen\" \"next dev\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx",
     "codegen": "graphql-codegen --config codegen.ts --watch"
   },
   "dependencies": {
