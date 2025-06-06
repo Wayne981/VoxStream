@@ -12,7 +12,7 @@ export const useCreateTweet = () => {
     mutationFn: (payload: CreateTweetData) =>
       graphQLClient.request(createTweetMutation, { payload }),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries(["all-tweets"]);
+      await queryClient.invalidateQueries({ queryKey: ["all-tweets"] });
       toast.success('Tweet Created Successfully', { id: "1" });
     },
   });
@@ -32,11 +32,11 @@ export const useDeleteTweet = () => {
     mutationFn: (id: string) =>
       graphQLClient.request(deleteTweetMutation, { id }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["all-tweets"]);
+      await queryClient.invalidateQueries({ queryKey: ["all-tweets"] });
       toast.success('Tweet deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.errors?.[0]?.message || 'Failed to delete tweet');
+    onError: (error: Error) => {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete tweet');
     }
   });
 
@@ -44,19 +44,21 @@ export const useDeleteTweet = () => {
     await mutation.mutateAsync(id);
   };
 
-  return { deleteTweet, isDeleting: mutation.isLoading };
+  return { deleteTweet, isDeleting: mutation.isPending };
 };
 
 export const useGetAllTweets = (initialTweets: Tweet[]) => {
   return useQuery({
     queryKey: ["all-tweets"],
     queryFn: async () => {
-      const response = await graphQLClient.request(getAllTweetsQuery);
-      return response.getAllTweets;
+      try {
+        const response = await graphQLClient.request(getAllTweetsQuery);
+        return response.getAllTweets as Tweet[];
+      } catch (error) {
+        console.error("Error fetching tweets:", error);
+        throw error;
+      }
     },
-    initialData: initialTweets,
-    onError: (error) => {
-      console.error("Error fetching tweets:", error);
-    },
+    initialData: initialTweets
   });
 };

@@ -50,7 +50,7 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
         {user && (
           <div className="mb-4 flex items-center gap-2 cursor-pointer hover:bg-gray-200 rounded-full p-3">
-            {user.profileImageURL && (
+      {user?.profileImageURL && (
   <Image
     src={user.profileImageURL}
     alt="Profile"
@@ -59,6 +59,7 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     className="rounded-full"
   />
 )}
+
 
             <div className="flex-grow">
               <p className="font-bold">{user.firstName} {user.lastName}</p>
@@ -90,26 +91,37 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
           <div className="bg-gray-50 rounded-2xl overflow-hidden">
             <h2 className="font-bold text-xl px-4 py-3 border-b border-gray-200">Who to follow</h2>
-            {user?.recommendedUsers?.map((recommendedUser) => (
-              <div key={recommendedUser.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-100">
-                <div className="flex items-center">
-                  <Image
-                    src={recommendedUser.profileImageURL}
-                    alt={`${recommendedUser.firstName} ${recommendedUser.lastName}`}
-                    width={48}
-                    height={48}
-                    className="rounded-full mr-3"
-                  />
-                  <div>
-                    <p className="font-bold text-sm">{recommendedUser.firstName} {recommendedUser.lastName}</p>
-                    <p className="text-gray-500 text-sm">@{recommendedUser.firstName.toLowerCase()}{recommendedUser.lastName.toLowerCase()}</p>
+            {user?.recommendedUsers?.map((recommendedUser) => {
+              if (!recommendedUser) return null;
+              return (
+                <div key={recommendedUser.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-100">
+                  <div className="flex items-center">
+                    {recommendedUser.profileImageURL ? (
+                      <Image
+                        src={recommendedUser.profileImageURL}
+                        alt={`${recommendedUser.firstName} ${recommendedUser.lastName}`}
+                        width={48}
+                        height={48}
+                        className="rounded-full mr-3"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
+                        <span className="text-gray-600 text-sm font-semibold">
+                          {recommendedUser.firstName?.[0]}{recommendedUser.lastName?.[0]}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-bold text-sm">{recommendedUser.firstName} {recommendedUser.lastName}</p>
+                      <p className="text-gray-500 text-sm">@{recommendedUser.firstName?.toLowerCase() || ''}{recommendedUser.lastName?.toLowerCase() || ''}</p>
+                    </div>
                   </div>
+                  <button className="bg-black text-white rounded-full px-4 py-1 text-sm font-bold hover:bg-opacity-80">
+                    Follow
+                  </button>
                 </div>
-                <button className="bg-black text-white rounded-full px-4 py-1 text-sm font-bold hover:bg-opacity-80">
-                  Follow
-                </button>
-              </div>
-            ))}
+              );
+            })}
             <button  className="block text-blue-500 hover:bg-blue-50 text-sm font-semibold px-4 py-3">
               Show more
             </button>
