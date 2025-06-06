@@ -7,6 +7,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useCurrentUser } from '@/hooks/user';
 import { useGoogleLogin } from '@/hooks/auth';
 import toast from 'react-hot-toast';
+import { User } from '@/gql/graphql';
 
 const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useCurrentUser();
@@ -91,7 +92,7 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
           <div className="bg-gray-50 rounded-2xl overflow-hidden">
             <h2 className="font-bold text-xl px-4 py-3 border-b border-gray-200">Who to follow</h2>
-            {user?.recommendedUsers?.map((recommendedUser) => {
+            {user?.recommendedUsers?.map((recommendedUser: User | null) => {
               if (!recommendedUser) return null;
               return (
                 <div key={recommendedUser.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-100">
