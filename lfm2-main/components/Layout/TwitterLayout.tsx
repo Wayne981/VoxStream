@@ -50,7 +50,16 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
         {user && (
           <div className="mb-4 flex items-center gap-2 cursor-pointer hover:bg-gray-200 rounded-full p-3">
-            <Image src={user.profileImageURL} alt="Profile" width={40} height={40} className="rounded-full" />
+            {user.profileImageURL && (
+  <Image
+    src={user.profileImageURL}
+    alt="Profile"
+    width={40}
+    height={40}
+    className="rounded-full"
+  />
+)}
+
             <div className="flex-grow">
               <p className="font-bold">{user.firstName} {user.lastName}</p>
               <p className="text-gray-500">@{user.firstName}7</p>
