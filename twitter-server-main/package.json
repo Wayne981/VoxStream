@@ -1,0 +1,32 @@
+{
+  "name": "twit-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node build/index.js",
+    "build": "tsc -p .",
+    "dev": "tsc-watch --onSuccess \"node build/index.js\""
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.6",
+    "prisma": "^5.19.1",
+    "tsc-watch": "^7.1.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@aws-sdk/client-s3": "^3.825.0",
+    "@aws-sdk/s3-request-presigner": "^3.825.0",
+    "@prisma/client": "5.19.1",
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.20.0",
+    "graphql": "^16.9.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
