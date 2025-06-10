@@ -30,23 +30,25 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onTweetCreate }) =>
         imageType: file.type,
       });
 
-      console.log('Received signed URL:', getSignedUrlForTweet);
+      console.log('Received signed URL response:', getSignedUrlForTweet);
 
       if (getSignedUrlForTweet) {
+        // Parse the JSON response containing both signedURL and publicURL
+        const { signedURL, publicURL } = JSON.parse(getSignedUrlForTweet);
+        
         toast.loading('Uploading image...', { id: '2' });
         
-        console.log('Uploading file to S3...');
-        await axios.put(getSignedUrlForTweet, file, {
+        console.log('Uploading file to S3 using signed URL...');
+        await axios.put(signedURL, file, {
           headers: { 'Content-Type': file.type }
         });
         
         console.log('Upload completed');
         toast.success('Upload completed', { id: '2' });
 
-        const url = new URL(getSignedUrlForTweet);
-        const myFilePath = `${url.origin}${url.pathname}`;
-        console.log('Setting image URL:', myFilePath);
-        setImageURL(myFilePath);
+        // Use the properly constructed public URL instead of extracting from signed URL
+        console.log('Setting image URL:', publicURL);
+        setImageURL(publicURL);
         setSelectedImage(URL.createObjectURL(file));
       } else {
         throw new Error('No signed URL received');
