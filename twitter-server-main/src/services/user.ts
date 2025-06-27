@@ -22,7 +22,7 @@ interface GoogleTokenResult {
     typ?: string;
 }
 
-class UserService { 
+class UserService {
     public static async verifyGoogleAuthToken(token: string) {
         const googleOauthURL = new URL("https://oauth2.googleapis.com/tokeninfo");
         googleOauthURL.searchParams.set("id_token", token);
@@ -34,12 +34,13 @@ class UserService {
             }
         );
 
-        const user = await prismaClient.user.findUnique({
+        // Check if user exists or create new one
+        let user = await prismaClient.user.findUnique({
             where: { email: data.email },
         });
 
         if (!user) {
-            await prismaClient.user.create({
+            user = await prismaClient.user.create({
                 data: {
                     email: data.email,
                     firstName: data.given_name,
@@ -47,21 +48,15 @@ class UserService {
                     profileImageURL: data.picture,
                 },
             });
+            console.log("✅ New user created:", user);
         }
 
-        const userInDb = await prismaClient.user.findUnique({
-            where: { email: data.email },
-        });
-
-        if (!userInDb) throw new Error("User with email not found");
-
-        const userToken = JWTService.generateTokenForUser(userInDb.id);
-
+        // ✅ FIXED: await token generation
+        const userToken = await JWTService.generateTokenForUser(user.id);
         return userToken;
     }
 
     public static getUserById(id: string) {
-        
         return prismaClient.user.findUnique({ where: { id } });
     }
 
@@ -74,11 +69,11 @@ class UserService {
         });
     }
 
-    public static unfollowUser(from: string, to: string) { 
-        return prismaClient.follows.delete({ 
+    public static unfollowUser(from: string, to: string) {
+        return prismaClient.follows.delete({
             where: {
                 followerId_followingId: {
-                    followerId: from, 
+                    followerId: from,
                     followingId: to
                 }
             }

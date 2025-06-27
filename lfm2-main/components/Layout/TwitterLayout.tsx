@@ -1,12 +1,48 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
-import { BsTwitter, BsSearch } from "react-icons/bs";
+import { BsSearch } from "react-icons/bs";
 import { BiHomeCircle, BiHash, BiBell, BiEnvelope, BiBookmark, BiListUl, BiUser, BiDotsHorizontalRounded } from "react-icons/bi";
 import Image from "next/image";
 import { GoogleLogin } from '@react-oauth/google';
 import { useCurrentUser } from '@/hooks/user';
 import { useGoogleLogin } from '@/hooks/auth';
 import toast from 'react-hot-toast';
+
+// VoxStream Simple & Elegant Logo (Twitter-style)
+const VoxStreamLogo = () => (
+  <div className="relative group">
+    <svg 
+      width="45" 
+      height="45" 
+      viewBox="0 0 32 32" 
+      className="transition-all duration-200 group-hover:scale-110"
+    >
+      <defs>
+        {/* Simple blue gradient like Twitter */}
+        <linearGradient id="voxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1da1f2" />
+          <stop offset="100%" stopColor="#0d8bd9" />
+        </linearGradient>
+      </defs>
+      
+      {/* VoxStream Icon - Simple "V" with stream lines */}
+      <g fill="url(#voxGradient)">
+        {/* Main "V" shape - clean and bold */}
+        <path 
+          d="M8 8 L16 24 L24 8 L20 8 L16 18 L12 8 Z" 
+          className="group-hover:brightness-110 transition-all duration-200"
+        />
+        
+        {/* Stream lines - three elegant lines */}
+        <g opacity="0.8">
+          <rect x="10" y="4" width="8" height="1.5" rx="0.75" />
+          <rect x="12" y="6.5" width="10" height="1.5" rx="0.75" />
+          <rect x="14" y="9" width="6" height="1.5" rx="0.75" />
+        </g>
+      </g>
+    </svg>
+  </div>
+);
 
 const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useCurrentUser();
@@ -29,8 +65,8 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       {/* Left Sidebar */}
       <header className="flex flex-col justify-between w-1/4 py-4 px-8">
         <div>
-          <div className="text-3xl h-12 w-12 text-blue-400 hover:bg-blue-100 rounded-full p-2 cursor-pointer inline-flex items-center justify-center">
-            <BsTwitter />
+          <div className="h-12 w-12 cursor-pointer inline-flex items-center justify-center">
+            <VoxStreamLogo />
           </div>
           <nav className="mt-4">
             <ul>
@@ -109,7 +145,7 @@ const TwitterLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             
           {!user && (
             <div className="mt-4 p-4 bg-slate-800 rounded-lg">
-              <h1 className="my-2 text-2xl font-normal text-white font-serif">New to Twitter?</h1>
+              <h1 className="my-2 text-2xl font-normal text-white font-serif">New to Vox?</h1>
       
               <GoogleLogin
                 onSuccess={handleLoginWithGoogle}

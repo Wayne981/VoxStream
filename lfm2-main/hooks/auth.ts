@@ -34,3 +34,16 @@ export const useGoogleLogin = () => {
 
   return handleLoginWithGoogle;
 };
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("_eno_ondh_esru"); // JWT key
+    queryClient.removeQueries(); // optional: clears cache
+    toast.success("Logged out");
+    window.location.href = "/"; // or use router.push("/")
+  }, [queryClient]);
+
+  return logout;
+};

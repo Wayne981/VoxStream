@@ -2,7 +2,7 @@
 // import { prismaClient } from "../clients/db";
 // import { User } from "@prisma/client";
 
-// const JWT_SECRET = "BruceHarsha";
+
 
 // type JWTUser = {
 //   id: string;
@@ -40,7 +40,10 @@ import JWT from "jsonwebtoken";
 import { prismaClient } from "../clients/db";
 import { User } from "@prisma/client";
 
-const JWT_SECRET = process.env.JWT_SECRET || "BruceHarsha";
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+
+
 
 type JWTUser = {
   id: string;
@@ -58,7 +61,7 @@ class JWTService {
             email: user.email,
         };
 
-        const token = JWT.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+        const token = JWT.sign(payload, JWT_SECRET, { expiresIn: '5h' });
         return token;
     }
 
@@ -86,3 +89,5 @@ class JWTService {
 }
 
 export default JWTService;
+
+

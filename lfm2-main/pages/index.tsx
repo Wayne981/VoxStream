@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import TweetComposer from '@/components/TweetComposer';
 import { useCurrentUser } from '@/hooks/user';
 import { useGetAllTweets, useCreateTweet } from '@/hooks/tweet';
-import { useGoogleLogin } from '@/hooks/auth';
+import { useGoogleLogin, useLogout } from '@/hooks/auth';
 import TwitterLayout from '@/components/Layout/TwitterLayout';
 import TweetFeed from '@/components/TweetFeed';
 import { GetServerSideProps } from 'next';
@@ -22,6 +22,7 @@ export default function Home({ initialTweets }: HomeProps) {
   const { tweets: fetchedTweets, isLoading, error } = useGetAllTweets(initialTweets);
   
   const handleLoginWithGoogle = useGoogleLogin(queryClient);
+  const logout = useLogout();
   const { createTweet } = useCreateTweet();
 
   const [tweets, setTweets] = useState<Tweet[]>(initialTweets || []);
@@ -63,7 +64,17 @@ export default function Home({ initialTweets }: HomeProps) {
     <TwitterLayout>
       <main className="w-1/2 border-x border-gray-200">
         <div className="sticky top-0 bg-white bg-opacity-80 backdrop-blur-sm z-10">
-          <h1 className="text-xl font-bold p-4">Home</h1>
+          <div className="flex justify-between items-center p-4">
+            <h1 className="text-xl font-bold">Home</h1>
+            {user && (
+              <button 
+                onClick={logout} 
+                className="text-sm text-red-500 hover:text-red-600 p-2"
+              >
+                Logout
+              </button>
+            )}
+          </div>
         </div>
         <TweetComposer user={user} onTweetCreate={handleTweetCreate} />
         <TweetFeed tweets={tweets} isLoading={isLoading} error={error} />

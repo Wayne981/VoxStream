@@ -7,13 +7,33 @@ import { FaRetweet } from "react-icons/fa";
 import { Tweet } from "@/gql/graphql";
 import Link from 'next/link';
 import AnimatedLikeButton from '../Likebutton';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { graphQLClient } from '@/clients/api';
+import { deleteTweetMutation } from '@/graphql/mutation/tweet';
+import { toast } from 'react-hot-toast';
+import { useCurrentUser } from '@/hooks/user';
 
 interface FeedCardProps {
   data: Tweet
 }
 
+const deleteTweet = async (tweetId: string) => {
+  return await graphQLClient.request(deleteTweetMutation, { tweetId });
+};
+
 const FeedCard: React.FC<FeedCardProps> = ({ data }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const queryClient = useQueryClient();
+  const { user } = useCurrentUser();
+
+  const mutation = useMutation({
+    mutationFn: () => deleteTweet(data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-tweets'] });
+      toast.success('Tweet deleted');
+    },
+    onError: () => toast.error('Failed to delete tweet'),
+  });
 
   const toggleLike = () => setIsLiked(!isLiked);
 
@@ -112,7 +132,14 @@ const FeedCard: React.FC<FeedCardProps> = ({ data }) => {
    
   </span>
 </button>
-            
+            {user && user.id === data.author.id && (
+              <button 
+                className="text-xs text-red-400 hover:text-red-600"
+                onClick={() => mutation.mutate()}
+              >
+                Delete
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -20,3 +20,11 @@ export const createTweetMutation = graphql(`#graphql
     }
     
     `); 
+
+export const deleteTweetMutation = graphql(`#graphql
+  mutation DeleteTweet($tweetId: String!) {
+    deleteTweet(tweetId: $tweetId) {
+      id
+    }
+  }
+`); 

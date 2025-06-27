@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import {initServer } from "./app";
-import * as dotenv from "dotenv";
+// import * as dotenv from "dotenv";
 
 dotenv.config(); // when server starts , it will read the .env file and set the environment variables
 
