@@ -96,4 +96,32 @@ npm run dev
 2. Create your feature branch
 3. Commit your changes
 4. Push to the branch
-5. Create a Pull Request 
+5. Create a Pull Request
+
+Json webtoken for googleAuth
+![image](https://github.com/user-attachments/assets/63fd4fa0-27ee-4f41-8067-42413cc4d063)
+
+npx prisma studio for the token
+![image](https://github.com/user-attachments/assets/a6c95ae4-8c8d-4942-98ee-475f96744a24)
+
+id
+![image](https://github.com/user-attachments/assets/bb97c4b5-6c62-4f03-9902-17fd6e97ccc1)
+
+Fetching specific queries using graphql
+![image](https://github.com/user-attachments/assets/19ae145a-3bfe-4861-a96f-462a8f8ad39b)
+
+Tanstack for storing user info
+![image](https://github.com/user-attachments/assets/85b38ac9-ce10-40ae-b84a-501ba17a1135)
+
+Deletion of the token for logout . When logged out
+![image](https://github.com/user-attachments/assets/1eb6b197-c8b2-4ed4-ba0c-769e91359ccd)
+
+Redis database in upstash for caching and rate limiting in code
+![image](https://github.com/user-attachments/assets/1877c46c-5d45-48ea-9451-c875ad37bb07)
+
+Redis reduces the response time and therefore increasing speed
+Rate limiting helps to detect spams of tweets
+
+
+
+
